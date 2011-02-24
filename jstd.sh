@@ -1,11 +1,20 @@
-#!/usr/bin/env expect
+#!/usr/bin/env bash
 
-spawn "bash"
+old_path=""
+function set_up {
+    echo $PATH
+    old_path=$PATH
+    export PATH="/tmp:$PATH"
+    echo $PATH
+}
 
-#send "echo \$PATH\r"
-send "export PATH=/tmp:\$PATH\r"
-#send "echo \$PATH\r"
+function tear_down {
+    echo $PATH
+    export PATH=$old_path
+    echo $PATH
+    echo "Bye!!!"
+}
 
-interact
-
-#echo "Bye!!!"
+set_up
+bash
+tear_down
