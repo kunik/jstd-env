@@ -1,0 +1,7 @@
+load:
+ - src/*.js
+
+test:
+ - tests/*.js
+
+timeout: 200

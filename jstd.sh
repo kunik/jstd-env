@@ -82,10 +82,14 @@ function create_symlinks {
 }
 
 function create_config_file {
-    if [ -a ${jstd_dir}/jstd.conf ]; then
+    if [ -a ${jstd_dir}/${jstd_config_file} ]; then
         echo "You already have config in your ${jstd_dir} folder.         [ Skipping ]"
     else
-        cp ${stuff_dir}/jstd.conf ${jstd_dir}
+        cp ${stuff_dir}/${jstd_config_file} ${jstd_dir}
+    fi
+
+    if [ ! -a ${jstd_dir}/local_config.sh ]; then
+        cat ${stuff_dir}/default_config.sh | awk '{ print "# " $0 }' > ${jstd_dir}/local_config.sh
     fi
 }
 
@@ -94,7 +98,7 @@ function enter {
         printf "Do you want to create jstd env? You are not able to enter non existing env. [Y/n] "
         read enter_env
 
-        if [ -z $enter_env ] || [ $enter_env == "y" ] || [ $enter_env == "Y" ]; then
+        if [ -z ${enter_env} ] || [ ${enter_env} == "y" ] || [ ${enter_env} == "Y" ]; then
             create
         else
             echo "Failed"
