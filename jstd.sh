@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
 
 jstd_dir=".jstd"
-pid_file_name="JsTestDriver.pid"
 start_stop_timeout=2
 
 local_jstd_dir="$PWD/${jstd_dir}"
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
 stuff_dir="${script_dir}/stuff"
+scripts_dir="${script_dir}/scripts"
+
+source ${scripts_dir}/helpers.sh
 
 function main {
-    load_config
+    load_config ${stuff_dir} ${local_jstd_dir}
 
     case $1 in
         create  ) create;;
@@ -22,18 +24,6 @@ function main {
 
         help | *) print_help
     esac
-}
-
-function load_config {
-    source "${stuff_dir}/default_config.sh"
-
-    if [ -f "${local_jstd_dir}/local_config.sh" ]; then
-        source "${local_jstd_dir}/local_config.sh"
-    fi
-
-    if [ -f "${local_jstd_dir}/port.sh" ]; then
-        source "${local_jstd_dir}/port.sh"
-    fi
 }
 
 
@@ -62,7 +52,7 @@ function create {
     create_directory
 
     echo "2) Creating symlink on jstd jar"
-    create_symlink_to_jar
+    create_symlinks
 
     echo "3) Creating new config"
     create_config_file
@@ -78,11 +68,16 @@ function create_directory {
     fi
 }
 
-function create_symlink_to_jar {
+function create_symlinks {
     if [ -a ${jstd_dir}/JsTestDriver.jar ]; then
         echo "The JsTestDriver.jar is already in your ${jstd_dir} folder. [ Skipping ]"
     else
         ln -s ${stuff_dir}/JsTestDriver.jar ${jstd_dir}
+    fi
+
+    if [ ! -a ${jstd_dir}/JsTestDriver.jar ]; then
+        ln -s ${scripts_dir}/run.sh ${jstd_dir}/run
+        #chmod +x ${jstd_dir}/run
     fi
 }
 
@@ -118,18 +113,6 @@ function enter_the_env {
 }
 
 function start {
-#    if [ ! -n "${ENV_LOCAL_JSTD_DIR:+1}" ]; then
-#        printf "You should enter the env to start jsTestDriver server. Do you want to do it right now? [Y/n] "
-#        read enter_env
-#
-#        if [ -z ${enter_env} ] || [ ${enter_env} == "y" ] || [ ${enter_env} == "Y" ]; then
-#            enter
-#        else
-#            echo "Failed"
-#            exit 2
-#        fi
-#    fi
-
     if [ ! -n "${ENV_LOCAL_JSTD_DIR:+1}" ]; then
         echo "Please enter the env to start server"
         exit 4
@@ -220,6 +203,7 @@ function set_up {
 function update_vars {
     export PATH="${local_jstd_dir}:$PATH"
     export ENV_LOCAL_JSTD_DIR="${local_jstd_dir}"
+    export ENV_GLOBAL_JSTD_DIR="${script_dir}"
 }
 
 function add_run_completion {
