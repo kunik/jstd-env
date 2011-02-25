@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 
 jstd_dir=".jstd"
+pid_file_name="JsTestDriver.pid"
+start_stop_timeout=2
+
 local_jstd_dir="$PWD/${jstd_dir}"
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
 stuff_dir="${script_dir}/stuff"
-
-jstd_env_flag="${local_jstd_dir}/env_entered"
-jstd_server_pid_file="${local_jstd_dir}/JsTestDriver.pid"
 
 function main {
     load_config
 
     case $1 in
-        create  ) create ;;
+        create  ) create;;
         enter   ) enter ;;
 
         start   ) start $2 ;;
@@ -20,8 +20,7 @@ function main {
         stop    ) stop ;;
         status  ) status ;;
 
-        help    ) print_help ;;
-        *       ) print_help
+        help | *) print_help
     esac
 }
 
@@ -60,31 +59,87 @@ HLP
 
 function create {
     echo "1) Creating directory for jstd stuff"
-    mkdir ${jstd_dir}
+    create_directory
 
     echo "2) Creating symlink on jstd jar"
-    ln -s ${stuff_dir}/JsTestDriver.jar ${jstd_dir}
+    create_symlink_to_jar
 
     echo "3) Creating new config"
-    cp ${stuff_dir}/jstd.conf ${jstd_dir}
+    create_config_file
 
     echo ""
-    enter
+}
+
+function create_directory {
+    if [ -d ${jstd_dir} ]; then
+        echo "There is directory with name ${jstd_dir} in current folder. [ Skipping ]"
+    else
+        mkdir ${jstd_dir}
+    fi
+}
+
+function create_symlink_to_jar {
+    if [ -a ${jstd_dir}/JsTestDriver.jar ]; then
+        echo "The JsTestDriver.jar is already in your ${jstd_dir} folder. [ Skipping ]"
+    else
+        ln -s ${stuff_dir}/JsTestDriver.jar ${jstd_dir}
+    fi
+}
+
+function create_config_file {
+    if [ -a ${jstd_dir}/jstd.conf ]; then
+        echo "You already have config in your ${jstd_dir} folder.         [ Skipping ]"
+    else
+        cp ${stuff_dir}/jstd.conf ${jstd_dir}
+    fi
 }
 
 function enter {
     if [ ! -d ${jstd_dir} ]; then
-        echo "Jstd env was not created"
-        exit 1
+        printf "Do you want to create jstd env? You are not able to enter non existing env. [Y/n] "
+        read enter_env
+
+        if [ -z $enter_env ] || [ $enter_env == "y" ] || [ $enter_env == "Y" ]; then
+            create
+        else
+            echo "Failed"
+            exit 1
+        fi
+
     fi
 
+    enter_the_env
+}
+
+function enter_the_env {
     set_up
     bash
     tear_down
 }
 
 function start {
-    check_if_can_work_with_server
+#    if [ ! -n "${ENV_LOCAL_JSTD_DIR:+1}" ]; then
+#        printf "You should enter the env to start jsTestDriver server. Do you want to do it right now? [Y/n] "
+#        read enter_env
+#
+#        if [ -z ${enter_env} ] || [ ${enter_env} == "y" ] || [ ${enter_env} == "Y" ]; then
+#            enter
+#        else
+#            echo "Failed"
+#            exit 2
+#        fi
+#    fi
+
+    if [ ! -n "${ENV_LOCAL_JSTD_DIR:+1}" ]; then
+        echo "Please enter the env to start server"
+        exit 4
+    fi
+
+    get_status
+    if [ $? -eq 1 ]; then
+        echo "Service is already running"
+        exit 5
+    fi
 
     start_on_port=$1
     if [ -z ${start_on_port} ]; then
@@ -95,10 +150,11 @@ function start {
     echo "jstd_port=\"${start_on_port}\"" > "${local_jstd_dir}/port.sh"
 
     java -jar "${local_jstd_dir}/JsTestDriver.jar" --port "${start_on_port}" &
-    echo $! > ${jstd_server_pid_file}
+    echo $! > "${local_jstd_dir}/${pid_file_name}"
+
+    sleep $start_stop_timeout
 
     get_status
-    echo $?
     if [ $? -eq 1 ]; then
         echo "Done"
     else
@@ -107,17 +163,23 @@ function start {
 }
 
 function stop {
-    check_if_can_work_with_server
+    get_status
+    if [ $? -ne 1 ]; then
+        echo "Server is not running"
+        exit 3
+    fi
+
     echo "Stopping server"
-    kill `cat ${jstd_server_pid_file}`
+    kill `cat "$ENV_LOCAL_JSTD_DIR/${pid_file_name}"`
+
+    sleep $start_stop_timeout
 
     get_status
-    echo $?
     if [ $? -eq 1 ]; then
         echo "Failed"
     else
         echo "Done"
-        rm ${jstd_server_pid_file}
+        rm "$ENV_LOCAL_JSTD_DIR/${pid_file_name}"
     fi
 }
 
@@ -127,10 +189,7 @@ function restart {
 }
 
 function status {
-    check_if_can_work_with_server
-
     get_status
-    echo $?
     if [ $? -eq 1 ]; then
         echo "Running"
     else
@@ -139,33 +198,28 @@ function status {
 }
 
 function get_status {
-    sleep 1
-    if [ ! -f ${jstd_server_pid_file} ]; then
+    if [ ! -f "$ENV_LOCAL_JSTD_DIR/${pid_file_name}" ]; then
         return 0
     fi
 
-    lines_count=`ps a | grep \`cat ${jstd_server_pid_file}\` | wc -l`
-    return $((${lines_count} - 1))
-}
-
-function check_if_can_work_with_server {
-    if [ ! -f ${jstd_env_flag} ]; then
-        echo "You should enter the env to start/stop/restart jsTestDriver server"
-        exit 2
+    lines_count=`ps a | grep \`cat "$ENV_LOCAL_JSTD_DIR/${pid_file_name}"\` | wc -l`
+    if [ $lines_count -gt 1 ]; then
+        return 1
+    else
+        return 0
     fi
 }
-
 
 
 function set_up {
     update_vars
     add_run_completion
-    touch ${jstd_env_flag}
     echo "You are in jstd env now! To exit, press Ctrl+D."
 }
 
 function update_vars {
     export PATH="${local_jstd_dir}:$PATH"
+    export ENV_LOCAL_JSTD_DIR="${local_jstd_dir}"
 }
 
 function add_run_completion {
@@ -173,8 +227,9 @@ function add_run_completion {
 }
 
 function tear_down {
-    if [ -f ${jstd_env_flag} ]; then
-        rm ${jstd_env_flag}
+    get_status
+    if [ $? -eq 1 ]; then
+        stop
     fi
 
     echo "Bye!!!"
