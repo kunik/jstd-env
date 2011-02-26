@@ -1,5 +1,5 @@
 load:
- - src/*.js
+ - src/**.js
 
 test:
  - tests/*.js
