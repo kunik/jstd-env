@@ -19,13 +19,13 @@ Usage
 Quick start
 ===========
 
-1) Install jstd-env
-2) Goto your project folder and run
+1.  Install jstd-env
+2.  Goto your project folder and run
 
     jstd start
 
-By default it will start on port 9878 but you can specify any port you want.
-3) Run the tests
+    By default it will start on port 9878 but you can specify any port you want.
+3.  Run the tests
 
     run
 
@@ -38,14 +38,12 @@ It will create symbolic link to the system wide JsTestDriver.jar and create loca
 Configuration
 =============
 In your .jstd folder there are three config files:
-* config.yaml contains configuration for JsTestDriver. For more information on it visit http://code.google.com/p/js-test-driver/wiki/ConfigurationFile
-* local_config.sh this file contains options for runner. By default it has global option values set and commented out
-* port.sh this file is re-generated after each server start and it contains port that was used last time
+
+*  config.yaml contains configuration for JsTestDriver. For more information on it visit http://code.google.com/p/js-test-driver/wiki/ConfigurationFile
+*  local_config.sh this file contains options for runner. By default it has global option values set and commented out
+*  port.sh this file is re-generated after each server start and it contains port that was used last time
 
 Installation
 ============
 
 Not ready yet :)
-
-
-
