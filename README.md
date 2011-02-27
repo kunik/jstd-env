@@ -22,12 +22,12 @@ Quick start
 1.  Install jstd-env
 2.  Goto your project folder and run
 
-    jstd start
+        jstd start
 
     By default it will start on port 9878 but you can specify any port you want.
 3.  Run the tests
 
-    run
+        run
 
 Creating the env
 ================
