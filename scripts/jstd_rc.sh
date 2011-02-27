@@ -9,16 +9,6 @@ case "$TERM" in
     xterm-color) color_prompt=yes;;
 esac
 
-#force_color_prompt=yes
-#
-#if [ -n "$force_color_prompt" ]; then
-#    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-#        color_prompt=yes
-#    else
-#        color_prompt=
-#    fi
-#fi
-
 if [ "$color_prompt" = yes ]; then
     PS1="${PS1}\[\033[0;33m\]jstd\[\033[00m\]> "
 else
@@ -43,3 +33,5 @@ _run_tests()
 }
 
 complete -F _run_tests run
+
+alias startsrv="jstd start"
