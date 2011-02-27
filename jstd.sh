@@ -94,11 +94,13 @@ function create_config_file {
 }
 
 function enter {
-    if [ ! -d ${jstd_dir} ]; then
-        printf "Do you want to create jstd env? You are not able to enter non existing env. [Y/n] "
-        read enter_env
+    local create_env
 
-        if [ -z ${enter_env} ] || [ ${enter_env} == "y" ] || [ ${enter_env} == "Y" ]; then
+    if [ ! -d ${jstd_dir} ]; then
+        printf "You are not able to enter non existing env. Do you want to create it now?  [Y/n] "
+        read create_env
+
+        if [ -z ${create_env} ] || [ ${create_env} == "y" ] || [ ${create_env} == "Y" ]; then
             create
         else
             echo "Failed"
@@ -117,8 +119,23 @@ function enter_the_env {
 }
 
 function start {
+    local start_on_port create_env
+
+    start_on_port=$1
+    if [ -z ${start_on_port} ]; then
+        start_on_port=${jstd_port}
+    fi
+
     if [ ! -n "${ENV_LOCAL_JSTD_DIR:+1}" ]; then
-        echo "Please enter the env to start server"
+        printf "To start JsTestDriver server you need to enter the env. Do you want to do it right now? [Y/n] "
+        read create_env
+
+        if [ -z ${create_env} ] || [ ${create_env} == "y" ] || [ ${create_env} == "Y" ]; then
+            export TRY_TO_START_SRV_ON_PORT=$start_on_port
+            enter
+        else
+            echo "Failed"
+        fi
         exit 4
     fi
 
@@ -128,18 +145,13 @@ function start {
         exit 5
     fi
 
-    start_on_port=$1
-    if [ -z ${start_on_port} ]; then
-        start_on_port=${jstd_port}
-    fi
-
     echo "Starting server on ${jstd_host}:${start_on_port}"
     echo "jstd_port=\"${start_on_port}\"" > "${local_jstd_dir}/port.sh"
 
     java -jar "${local_jstd_dir}/JsTestDriver.jar" --port "${start_on_port}" &
     echo $! > "${local_jstd_dir}/${pid_file_name}"
 
-    sleep $start_stop_timeout
+    sleep ${start_stop_timeout}
 
     get_status
     if [ $? -eq 1 ]; then
@@ -185,6 +197,8 @@ function status {
 }
 
 function get_status {
+    local lines_count
+
     if [ ! -f "$ENV_LOCAL_JSTD_DIR/${pid_file_name}" ]; then
         return 0
     fi
