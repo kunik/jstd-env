@@ -39,7 +39,7 @@ Configuration
 =============
 In your .jstd folder there are three config files:
 
-*  config.yaml contains configuration for JsTestDriver. For more information on it visit http://code.google.com/p/js-test-driver/wiki/ConfigurationFile
+*  config.yaml contains configuration for JsTestDriver. For more information on it visit [JsTestDriver page](http://code.google.com/p/js-test-driver/wiki/ConfigurationFile "ConfigurationFile - js-test-driver")
 *  local_config.sh this file contains options for runner. By default it has global option values set and commented out
 *  port.sh this file is re-generated after each server start and it contains port that was used last time
 
