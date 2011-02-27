@@ -30,8 +30,8 @@ function main {
 function print_help {
     cat - <<HLP
 Jstd-env is a helper script that should help writing and running tests as much quickly and easy as possible.
-It creates ${jstd_dir} dir with jsTestDriver, it's config and other cool stuff inside your working copy and
-allows you to run tests with single 'run' command.
+It creates ${jstd_dir} dir with jsTestDriver, it_s config and other cool stuff inside your working copy and
+allows you to run tests with single "run" command.
 
 Usage:
     $0 help            prints the current message
@@ -112,7 +112,7 @@ function enter {
 
 function enter_the_env {
     set_up
-    bash
+    bash --rcfile ${scripts_dir}/jstd_rc.sh
     tear_down
 }
 
@@ -200,7 +200,6 @@ function get_status {
 
 function set_up {
     update_vars
-    add_run_completion
     echo "You are in jstd env now! To exit, press Ctrl+D."
 }
 
@@ -208,10 +207,6 @@ function update_vars {
     export PATH="${local_jstd_dir}:$PATH"
     export ENV_LOCAL_JSTD_DIR="${local_jstd_dir}"
     export ENV_GLOBAL_JSTD_DIR="${script_dir}"
-}
-
-function add_run_completion {
-    echo "=="
 }
 
 function tear_down {
