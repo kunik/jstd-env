@@ -46,6 +46,6 @@ complete -F _run_tests run
 
 alias startsrv="jstd start"
 
-if [ -n $TRY_TO_START_SRV_ON_PORT ]; then
+if [[ -n $TRY_TO_START_SRV_ON_PORT ]]; then
     jstd start $TRY_TO_START_SRV_ON_PORT
 fi
