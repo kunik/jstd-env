@@ -16,13 +16,18 @@ else
 fi
 unset color_prompt force_color_prompt
 
+#  loading config
+source $ENV_GLOBAL_JSTD_DIR/scripts/helpers.sh
+load_config $ENV_GLOBAL_JSTD_DIR/stuff $ENV_LOCAL_JSTD_DIR
+
 #  Completion for run:
 #
 #  run TestCase
 #
 _run_tests()
 {
-    local cur prev opts cur_pwd
+    local cur prev opts cur_pwd test_files
+    test_files=`grep '.js' $ENV_LOCAL_JSTD_DIR/${jstd_config_file} | sed 's/\s*-\s*\(.*\)/\1/' | tr "\\n" " "`
 
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
@@ -30,7 +35,7 @@ _run_tests()
     cur_pwd=$PWD
     cd $ENV_LOCAL_JSTD_DIR/..
 
-    opts=`grep 'TestCase' tests/*.js | sed 's/.*TestCase\s*(\s*['"'"'"]\([^'"'"'"]*\).*/\1/'`
+    opts=`grep 'TestCase' ${test_files} | sed 's/.*TestCase\s*(\s*['"'"'"]\([^'"'"'"]*\).*/\1/'`
     cd $cur_pwd
 
     COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
