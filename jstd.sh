@@ -75,9 +75,8 @@ function create_symlinks {
         ln -s ${stuff_dir}/JsTestDriver.jar ${jstd_dir}
     fi
 
-    if [ ! -a ${jstd_dir}/JsTestDriver.jar ]; then
+    if [ ! -e ${jstd_dir}/run ]; then
         ln -s ${scripts_dir}/run.sh ${jstd_dir}/run
-        #chmod +x ${jstd_dir}/run
     fi
 }
 
