@@ -22,11 +22,16 @@ unset color_prompt force_color_prompt
 #
 _run_tests()
 {
-    local cur prev opts
+    local cur prev opts cur_pwd
 
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
-    opts=`grep 'TestCase' src/**.js tests/*.js | sed 's/.*TestCase\s*(\s*['"'"'"]\([^'"'"'"]*\).*/\1/'`
+
+    cur_pwd=$PWD
+    cd $ENV_LOCAL_JSTD_DIR/..
+
+    opts=`grep 'TestCase' tests/*.js | sed 's/.*TestCase\s*(\s*['"'"'"]\([^'"'"'"]*\).*/\1/'`
+    cd $cur_pwd
 
     COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
     return 0
