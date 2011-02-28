@@ -5,8 +5,8 @@ start_stop_timeout=2
 
 local_jstd_dir="$PWD/${jstd_dir}"
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
-stuff_dir="${script_dir}/stuff"
-scripts_dir="${script_dir}/scripts"
+stuff_dir="${script_dir}/jstd_stuff"
+scripts_dir="${stuff_dir}/scripts"
 
 source ${scripts_dir}/helpers.sh
 
@@ -220,7 +220,8 @@ function set_up {
 function update_vars {
     export PATH="${local_jstd_dir}:$PATH"
     export ENV_LOCAL_JSTD_DIR="${local_jstd_dir}"
-    export ENV_GLOBAL_JSTD_DIR="${script_dir}"
+    export ENV_GLOBAL_JSTD_SCRIPT_DIR="${script_dir}"
+    export ENV_GLOBAL_JSTD_DIR="${stuff_dir}"
 }
 
 function tear_down {

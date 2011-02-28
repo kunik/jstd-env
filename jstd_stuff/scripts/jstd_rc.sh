@@ -18,7 +18,7 @@ unset color_prompt force_color_prompt
 
 #  loading config
 source $ENV_GLOBAL_JSTD_DIR/scripts/helpers.sh
-load_config $ENV_GLOBAL_JSTD_DIR/stuff $ENV_LOCAL_JSTD_DIR
+load_config $ENV_GLOBAL_JSTD_DIR $ENV_LOCAL_JSTD_DIR
 
 #  Completion for run:
 #

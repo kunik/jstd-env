@@ -1,6 +1,6 @@
 #!/bin/bash
 
-stuff_dir="$ENV_GLOBAL_JSTD_DIR/stuff"
+stuff_dir="$ENV_GLOBAL_JSTD_DIR"
 scripts_dir="$ENV_GLOBAL_JSTD_DIR/scripts"
 
 source "${scripts_dir}/helpers.sh"
