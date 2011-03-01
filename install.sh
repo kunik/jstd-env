@@ -4,8 +4,22 @@
 #_BIN_DIR="/usr/local/bin"
 _SBIN_DIR="$HOME/local/sbin"
 _BIN_DIR="$HOME/local/bin"
-
 _JAR_URL="http://js-test-driver.googlecode.com/files/JsTestDriver-1.3.1.jar"
+
+assert_dir_is_writable()
+{
+    if [ -d "$1" -a -w "$1" ]
+    then
+        echo "$1 is ok"
+    else
+        echo "Do not have write access to $1"
+        exit 1
+    fi
+}
+
+echo "Checking installation directories"
+assert_dir_is_writable ${_SBIN_DIR}
+assert_dir_is_writable ${_BIN_DIR}
 
 sbin_jstd_dir="${_SBIN_DIR}/jstd-env"
 
@@ -32,7 +46,7 @@ cd ${tmp}
 
 # Download sources
 echo "Downloading sources"
-curl -L http://github.com/kunik/jstd-env/tarball/master | tar xzvf -
+curl -L http://github.com/kunik/jstd-env/tarball/master | tar xzvf - >/dev/null
 
 ret=$?
 if [ ${ret} -ne 0 ]; then
