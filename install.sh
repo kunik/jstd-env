@@ -1,9 +1,5 @@
 #!/bin/sh
 
-#_SBIN_DIR="/usr/local/sbin"
-#_BIN_DIR="/usr/local/bin"
-_SBIN_DIR="$HOME/local/sbin"
-_BIN_DIR="$HOME/local/bin"
 _JAR_URL="http://js-test-driver.googlecode.com/files/JsTestDriver-1.3.1.jar"
 
 assert_dir_is_writable()
@@ -17,6 +13,15 @@ assert_dir_is_writable()
     fi
 }
 
+# Setting installation dirs
+if [ "x${_SBIN_DIR}" = "x" ]; then
+    _SBIN_DIR="/usr/local/sbin"
+fi
+
+if [ "x${_BIN_DIR}" = "x" ]; then
+    _BIN_DIR="/usr/local/bin"
+fi
+
 echo "Checking installation directories"
 assert_dir_is_writable ${_SBIN_DIR}
 assert_dir_is_writable ${_BIN_DIR}
@@ -25,7 +30,7 @@ sbin_jstd_dir="${_SBIN_DIR}/jstd-env"
 
 # Check if temp dir is set in env
 tmp=$TMPDIR
-if [ "x$tmp" = "x" ]; then
+if [ "x${tmp}" = "x" ]; then
     tmp="/tmp"
 fi
 
