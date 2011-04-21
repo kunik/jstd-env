@@ -77,7 +77,7 @@ mkdir "${sbin_jstd_dir}" \
     && cp jstd.sh "${sbin_jstd_dir}" \
     && cp -r jstd_stuff "${sbin_jstd_dir}" \
     && cp ${jar_path} "${sbin_jstd_dir}/jstd_stuff" \
-        && chmod a+r -R "${sbin_jstd_dir}" \
+        && chmod -R a+r "${sbin_jstd_dir}" \
         && chmod a+rx "${sbin_jstd_dir}/jstd.sh" \
         && chmod a+rx "${sbin_jstd_dir}/jstd_stuff/scripts/run.sh" \
     && ln -s "${sbin_jstd_dir}/jstd.sh" "${_BIN_DIR}/jstd" \
